@@ -26,7 +26,7 @@ This package was created for Assessment 4 of ETC5523 (Communicating with Data).
 
 You can install the development version of neonWaterQuality from [GitHub](https://github.com/ETC5523-2025/assignment-4-packages-and-shiny-apps-sagabmonash) with:
 
-``` {r}
+``` {r eval=FALSE}
 # install.packages("remotes")
 remotes::install_github("ETC5523-2025/assignment-4-packages-and-shiny-apps-sagabmonash")
 ```
@@ -35,11 +35,12 @@ remotes::install_github("ETC5523-2025/assignment-4-packages-and-shiny-apps-sagab
 
 To explore the data, you can launch the interactive Shiny app:
 
-```{r}
+```{r eval=FALSE}
 library(neonWaterQuality)
 launch_app()
 ```
 
 ## Website
 
-The full documentation and package website is available at: [GitHub](https://github.com/ETC5523-2025/assignment-4-packages-and-shiny-apps-sagabmonash)
+The full documentation and package website is available at:
+[https://etc5523-2025.github.io/assignment-4-packages-and-shiny-apps-sagabmonash/](https://etc5523-2025.github.io/assignment-4-packages-and-shiny-apps-sagabmonash/)
