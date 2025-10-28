@@ -1,0 +1,161 @@
+---
+title: "Exploring NEON Water Quality"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{exploring_neon_water_quality}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+
+# Set default chunk options
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+# Load required packages
+library(neonWaterQuality)
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+```
+
+## Introduction
+
+This vignette explores the `neon_water_quality` dataset included in the `neonWaterQuality` package. This dataset contains high-frequency (15-minute intervals) water quality measurements from three US sites (Arikaree River, Caribou Creek, Lewis Run) managed by the National Ecological Observatory Network (NEON) for the years 2018-2019.
+
+The data processing follows the methodology described in the paper:
+
+> Kermorvant C, Liquet B, Litt G, Mengersen K, Peterson EE, Hyndman RJ, et al. (2023) Understanding links between water-quality variables and nitrate concentration in freshwater streams using high frequency sensor data. PLoS ONE 18(6): e0287640. [https://doi.org/10.1371/journal.pone.0287640](https://doi.org/10.1371/journal.pone.0287640)
+
+We will demonstrate how to load the data and perform some basic exploratory analysis.
+
+## Loading the Data
+
+```{r load-data}
+
+# Load the specific dataset
+data("neon_water_quality")
+
+# Display the first few rows
+head(neon_water_quality)
+
+# Show the structure
+str(neon_water_quality)
+```
+
+## Exploratory Data Analysis (EDA)
+
+### Summarize the Data
+
+This chunk uses `dplyr` to calculate summary statistics for key variables, grouped by site.
+
+```{r summarize-data}
+
+# Calculate summary statistics for key variables by site
+summary_stats <- neon_water_quality %>%
+  group_by(siteName) %>%
+  summarise(
+    across(c(nitrate, temperature, dissolved_oxygen, specific_conductance, turbidity, elevation), 
+           list(
+             min = ~min(.x, na.rm = TRUE),
+             median = ~median(.x, na.rm = TRUE),
+             mean = ~mean(.x, na.rm = TRUE),
+             max = ~max(.x, na.rm = TRUE)
+           ),
+           .names = "{.col}_{.fn}")
+  ) %>%
+  ungroup()
+
+# Print the summary table nicely
+knitr::kable(summary_stats, caption = "Summary statistics for key water quality variables by site.")
+```
+
+The table above shows the minimum, median, mean, and maximum values for the main water quality variables at the three NEON sites. Notice how the typical ranges are different. For example, Lewis Run has a much higher median nitrate concentration than Arikaree River and Caribou Creek, while Caribou Creek has a much lower specific conductance. These differences show how different the weather and environment are at each site.
+
+### Visualize Distributions
+
+This chunk creates histograms to show the distribution of nitrate concentrations at each site, faceted for easy comparison.
+
+```{r visualize-distributions, fig.cap="Distribution of nitrate concentrations at each site."}
+
+ggplot(neon_water_quality, aes(x = nitrate)) +
+  geom_histogram(bins = 30, fill = "skyblue", color = "black", alpha = 0.7) +
+  facet_wrap(~siteName, scales = "free") + # free scales for better visibility
+  labs(
+    title = "Distribution of Nitrate Concentrations",
+    x = "Nitrate (µmol/L)",
+    y = "Frequency (Count of 15-min intervals)"
+  ) +
+  theme_minimal()
+```
+
+These histograms show how the nitrate levels are spread out at each site. The distributions are very different. Lewis Run has a distribution that is centred around much higher concentrations, while Arikaree and Caribou Creek have distributions that are skewed towards lower values. The scales = "free" argument is used because the ranges are so different.
+
+### Visualize Time Series
+
+This chunk plots nitrate concentration over time for all three sites.
+
+```{r visualize-timeseries, fig.cap="Nitrate concentration over the study period (2018-2019)."}
+
+ggplot(neon_water_quality, aes(x = datetime, y = nitrate, color = siteName)) +
+  geom_line(alpha = 0.8) +
+  facet_wrap(~siteName, ncol = 1, scales = "free_y") + # Stacked vertically, free y-axis
+  labs(
+    title = "Nitrate Concentration Over Time",
+    x = "Date",
+    y = "Nitrate (µmol/L)"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+This graph shows how the nitrate levels changed over time at each site.  We can see different patterns and changes.  Lewis Run has higher overall nitrate levels and may have noticeable seasonal changes than the patterns at Caribou Creek, which are relatively stable but noisy, or the patterns at Arikaree River, which are sometimes irregular.
+
+### Explore Relationships
+
+These chunks recreate scatter plots similar to those implicitly discussed in the paper when building the GAM models.
+
+```{r explore-nitrate-vs-conductance, fig.cap="Relationship between nitrate and specific conductance."}
+
+ggplot(neon_water_quality, aes(x = specific_conductance, y = nitrate)) +
+  geom_point(aes(color = siteName), alpha = 0.3, size = 0.5) + # Add color, reduce alpha/size
+  facet_wrap(~siteName, scales = "free") + # Free scales are essential
+  labs(
+    title = "Nitrate vs. Specific Conductance",
+    x = "Specific Conductance (µS/cm)",
+    y = "Nitrate (µmol/L)"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+**Nitrate vs. Specific Conductance**
+
+This scatter plot explores the relationship between nitrate and specific conductance. The paper says that this relationship is very different at different sites. There seems to be a complicated, non-linear relationship at Caribou Creek, while the patterns at Arikaree River and Lewis Run are different, especially at lower conductance values.
+
+```{r explore-nitrate-vs-logturbidity, fig.cap="Relationship between nitrate and log-transformed turbidity."}
+
+ggplot(neon_water_quality, aes(x = log_turbidity, y = nitrate)) +
+  geom_point(aes(color = siteName), alpha = 0.3, size = 0.5) +
+  facet_wrap(~siteName, scales = "free") +
+  labs(
+    title = "Nitrate vs. Log-Turbidity",
+    x = "Log(Turbidity + 1)",
+    y = "Nitrate (µmol/L)"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+**Nitrate vs. Log-Turbidity**
+
+We look at the relationship between nitrate concentration and turbidity that has been changed into logs.  The relationship seems weak and changes from site to site. It could be negative at Caribou and Arikaree, and it could be more complicated at Lewis Run. This is in line with the paper's GAM analysis, which found wide confidence intervals.
+
+## Conclusion
+
+The "neon_water_quality" dataset is a great way to learn about how water quality changes in different environments.  Nitrate levels and how they relate to other factors, such as temperature and specific conductance, differ a lot from one site to the next.
+
+To explore more interactively, run `launch_app()` to open the Shiny app that comes with this package.

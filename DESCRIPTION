@@ -17,3 +17,7 @@ Imports:
     DT,
     plotly,
     shiny
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
