@@ -3,14 +3,13 @@
 
 # neonWaterQuality
 
-<!-- badges: start -->
+[![Pkgdown](https://img.shields.io/badge/pkgdown-website-blue)](https://etc5523-2025.github.io/assignment-4-packages-and-shiny-apps-sagabmonash/)
 
-<!-- badges: end -->
-
-This package provides high-frequency water quality data from three NEON
-sites (ARIK, CARI, LEWI) for 2018-2019, as analyzed in Kermorvant et
-al. (2023). It also includes a Shiny application to explore the data
-interactively.
+Welcome to the **neonWaterQuality** R package, this package provides
+high-frequency water quality data from three NEON sites (ARIK (Arikaree
+River), CARI (Caribou Creek), LEWI(Lewis Run)) for 2018-2019, as
+analyzed in Kermorvant et al. (2023). It also includes a Shiny
+application to explore the data interactively.
 
 This package was created for Assessment 4 of ETC5523 (Communicating with
 Data).
