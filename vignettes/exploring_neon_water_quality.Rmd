@@ -2,7 +2,7 @@
 title: "Exploring NEON Water Quality"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{exploring_neon_water_quality}
+  %\VignetteIndexEntry{Exploring NEON Water Quality}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

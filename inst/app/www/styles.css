@@ -1,0 +1,8 @@
+/* inst/app/www/styles.css */
+.bg-light { 
+  background-color: #f0f8ff !important; /* Alice blue */
+}
+
+.col-sm-8 h4 { /* Change color of level 4 headers */
+  color: #006DAE !important; 
+}

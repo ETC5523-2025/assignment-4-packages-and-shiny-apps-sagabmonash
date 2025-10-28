@@ -9,73 +9,56 @@ library(DT)
 # We use bslib for styling
 ui <- fluidPage(
   theme = bs_theme(version = 5, bootswatch = "litera"),
-  
+  includeCSS("www/styles.css"),
   titlePanel("NEON Water Quality Explorer"),
+  
   
   # Use a sidebar layout
   sidebarLayout(
     sidebarPanel(
-      h4("Instructions"),
-      p("Use these controls to filter the data. The plots and table will update automatically."),
-      
-      # Interactive Input 1: Select sites
-      selectizeInput(
-        inputId = "siteSelect",
-        label = "Select Site(s):",
-        # We load the data here just to get the site names
-        choices = unique(neonWaterQuality::neon_water_quality$siteName),
-        selected = "Arikaree River",
-        multiple = TRUE
-      ),
-      
-      # Interactive Input 2: Select date range
-      dateRangeInput(
-        inputId = "dateSelect",
-        label = "Select Date Range:",
-        start = min(neonWaterQuality::neon_water_quality$datetime),
-        end = max(neonWaterQuality::neon_water_quality$datetime)
-      ),
-      
-      h5("About the Data"),
-      p("This app visualizes high-frequency water quality data from Kermorvant et al. (2023).")
-    ),
+      bslib::card(
+        bslib::card_header("Controls & Info"),
+        bslib::card_body(
+          h4("Instructions"),
+          p("Use these controls to filter the data. The plots and table will update automatically."),
+          selectizeInput(inputId = "siteSelect", label = "Select Site(s):",
+                         choices = unique(neonWaterQuality::neon_water_quality$siteName),
+                         selected = "Arikaree River", multiple = TRUE),
+          dateRangeInput(inputId = "dateSelect",
+                         label = "Select Date Range:", start = min(neonWaterQuality::neon_water_quality$datetime),
+                         end = max(neonWaterQuality::neon_water_quality$datetime)),
+          hr(), # Added separator for clarity
+          h5("About the Data"),
+          p("This app visualizes high-frequency water quality data from Kermorvant et al. (2023).")
+        )
+      ) # End of bslib::card
+    ), # End of sidebarPanel - THIS IS THE KEY FIX
     
-    mainPanel(
-      # We use tabs to organize the output
+    mainPanel( # Start of mainPanel as the second argument
       tabsetPanel(
         type = "tabs",
-        tabPanel(
-          "Nitrate vs. Time",
-          h4("Nitrate Concentration over Time"),
-          p("Shows the 15-minute nitrate measurements for the selected sites."),
-          plotlyOutput("nitratePlot") # Interactive plot
-        ),
-        tabPanel(
-          "Variable Relationships",
-          h4("Explore Relationships"),
-          p("Select two variables to see how they relate to each other."),
-          
-          # More interactivity
-          fluidRow(
-            column(6, selectInput("var_x", "X-Axis Variable:",
-                                  choices = c("temperature", "dissolved_oxygen", "specific_conductance", "log_turbidity", "elevation"),
-                                  selected = "log_turbidity")),
-            column(6, selectInput("var_y", "Y-Axis Variable:",
-                                  choices = c("nitrate"),
-                                  selected = "nitrate"))
-          ),
-          plotlyOutput("scatterPlot") # Interactive plot
-        ),
-        tabPanel(
-          "Raw Data",
-          h4("Filtered Data Table"),
-          p("The raw data, based on your selections."),
-          DT::dataTableOutput("dataTable") # Interactive table
-        )
-      )
-    )
-  )
-)
+        tabPanel("Nitrate vs. Time",
+                 h4("Nitrate Concentration over Time"),
+                 p("Shows the 15-minute nitrate measurements for the selected sites."),
+                 plotlyOutput("nitratePlot")),
+        tabPanel("Variable Relationships",
+                 h4("Explore Relationships"),
+                 p("Select two variables to see how they relate to each other."),
+                 fluidRow(
+                   column(6, selectInput("var_x", "X-Axis Variable:",
+                                         choices = c("temperature", "dissolved_oxygen", "specific_conductance",
+                                                     "log_turbidity", "elevation"), selected = "log_turbidity")),
+                   column(6, selectInput("var_y", "Y-Axis Variable:",
+                                         choices = c("nitrate"), selected = "nitrate"))
+                 ),
+                 plotlyOutput("scatterPlot")),
+        tabPanel("Raw Data",
+                 h4("Filtered Data Table"),
+                 p("The raw data, based on your selections."),
+                 DT::dataTableOutput("dataTable"))
+      ) # End of tabsetPanel
+    ) # End of mainPanel
+  )) # End of sidebarLayout
 
 # 2. THE SERVER (LOGIC)
 server <- function(input, output, session) {
@@ -110,6 +93,9 @@ server <- function(input, output, session) {
   
   # Output 1: Nitrate Time Series Plot
   output$nitratePlot <- renderPlotly({
+    site_names <- paste(unique(filtered_data()$siteName), collapse = ", ")
+    plot_title <- paste("Nitrate Concentration for", site_names)
+    
     plot_ly(
       filtered_data(),
       x = ~datetime,
@@ -119,7 +105,7 @@ server <- function(input, output, session) {
       mode = 'markers'
     ) %>%
       layout(
-        title = "Nitrate Concentration",
+        title = plot_title,
         xaxis = list(title = "Date"),
         yaxis = list(title = "Nitrate (µmol/L)")
       )
