@@ -6,12 +6,15 @@ navbar:
   components:
     articles:
       text: Articles
-      menu:           
-        
+      menu:
+        # Vignette entry
+        - text: Exploring NEON Water Quality Data
+          href: articles/exploring_neon_water_quality.html
+          
         # Add a visual separator (optional)
         - text: "-----------" 
         
-        # Add your custom link to the Shiny app
+        # Add link to the Shiny app
         - text: Live Shiny App 🚀 
           href: https://sagabari.shinyapps.io/neon-water-explorer/
           target: _blank
