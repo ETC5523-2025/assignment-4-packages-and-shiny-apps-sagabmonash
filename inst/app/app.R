@@ -21,9 +21,14 @@ ui <- fluidPage(
         bslib::card_body(
           h4("Instructions"),
           p("Use these controls to filter the data. The plots and table will update automatically."),
+          
+          # Input 1: Site Selector
           selectizeInput(inputId = "siteSelect", label = "Select Site(s):",
                          choices = unique(neonWaterQuality::neon_water_quality$siteName),
                          selected = "Arikaree River", multiple = TRUE),
+          helpText("Choose one or more NEON sites (Arikaree River, Caribou Creek, Lewis Run) to display."), # Description for siteSelect
+          
+          # Input 2: Date Selector
           dateRangeInput(inputId = "dateSelect",
                          label = "Select Date Range:", start = min(neonWaterQuality::neon_water_quality$datetime),
                          end = max(neonWaterQuality::neon_water_quality$datetime)),
@@ -37,13 +42,25 @@ ui <- fluidPage(
     mainPanel( # Start of mainPanel as the second argument
       tabsetPanel(
         type = "tabs",
+        
+        # Tab 1: Nitrate vs. Time
         tabPanel("Nitrate vs. Time",
                  h4("Nitrate Concentration over Time"),
-                 p("Shows the 15-minute nitrate measurements for the selected sites."),
+                 p("This plot shows the 15-minute nitrate measurements (µmol/L) 
+                   for the selected sites and date range."), # What it shows
+                 p(strong("Interpretation:")), # Add interpretation heading
+                 p("Observe the overall levels, daily fluctuations 
+                   (diel patterns), seasonal trends, and any potential event-driven spikes 
+                   (e.g., after rainfall, though precipitation data isn't shown here) in nitrate concentration. 
+                   Compare patterns across different sites if multiple are selected."),
                  plotlyOutput("nitratePlot")),
+        
+        # Tab 2: Variable Relationships
         tabPanel("Variable Relationships",
-                 h4("Explore Relationships"),
-                 p("Select two variables to see how they relate to each other."),
+                 h4("Explore Relationships Between Variables"),
+                 p("This scatter plot shows the relationship between two selected water quality variables 
+                   for the chosen sites and dates. Use the dropdown menus below 
+                   to change the variables on the X and Y axes."),
                  fluidRow(
                    column(6, selectInput("var_x", "X-Axis Variable:",
                                          choices = c("temperature", "dissolved_oxygen", "specific_conductance",
@@ -51,6 +68,11 @@ ui <- fluidPage(
                    column(6, selectInput("var_y", "Y-Axis Variable:",
                                          choices = c("nitrate"), selected = "nitrate"))
                  ),
+                 p(strong("Interpretation:")), # Add interpretation heading
+                 p("Look for patterns, correlations (positive or negative), 
+                   or distinct clusters in the scatter plot. The relationship between variables 
+                   (e.g., nitrate vs. specific conductance) can differ significantly between sites, 
+                   reflecting different underlying environmental processes as discussed in Kermorvant et al. (2023)."),
                  plotlyOutput("scatterPlot")),
         tabPanel("Raw Data",
                  h4("Filtered Data Table"),
