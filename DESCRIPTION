@@ -1,9 +1,12 @@
 Package: neonWaterQuality
-Title: What the Package Does (One Line, Title Case)
+Title: Explore High-Frequency NEON Water Quality Data
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+    person("Bagas Ari", "Wibawanto", , "bwib0004@estudent.monash.edu", role = c("aut", "cre"))
+Description: Provides processed high-frequency water quality data (nitrate, temperature, dissolved oxygen, specific conductance, turbidity, 
+    elevation) for the years 2018-2019 from three NEON aquatic sites (ARIK, CARI, LEWI), based on the analysis by Kermorvant et al. (2023) 
+    <https://doi.org/10.1371/journal.pone.0287640>. Includes a Shiny application for interactive data exploration. Created for Assessment 4 
+    of ETC5523 (Communicating with Data) at Monash University..
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -20,6 +23,8 @@ Imports:
     shiny
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    cli
 VignetteBuilder: knitr
 URL: https://etc5523-2025.github.io/assignment-4-packages-and-shiny-apps-sagabmonash/
+BugReports: https://github.com/ETC5523-2025/assignment-4-packages-and-shiny-apps-sagabmonash/issues
