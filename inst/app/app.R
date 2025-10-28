@@ -83,18 +83,28 @@ server <- function(input, output, session) {
   # Load the package data ONCE
   data <- neonWaterQuality::neon_water_quality
   
+  # Check if data loaded (add this temporarily for debugging)
+  print(paste("Data dimensions:", paste(dim(data), collapse=" x ")))
+  
   # Create a SHARED REACTIVE dataset
-  # This filters the data based on user input and is fast because it only re-runs when an input changes.
   filtered_data <- reactive({
     
     # Use req() to prevent errors before inputs are ready
     req(input$siteSelect, input$dateSelect)
     
+    # Convert input Date objects to POSIXct datetimes
+    # Start date should be the beginning of the selected day
+    start_dt <- as.POSIXct(input$dateSelect[1], tz = "UTC")
+    
+    # End date should be the beginning of the *next* day
+    # So we filter for datetime < end_dt
+    end_dt <- as.POSIXct(input$dateSelect[2] + 1, tz = "UTC")
+                           
     data %>%
       filter(
         siteName %in% input$siteSelect,
-        datetime >= input$dateSelect[1],
-        datetime <= input$dateSelect[2]
+        datetime >= start_dt,
+        datetime < end_dt
       )
   })
   
@@ -135,7 +145,10 @@ server <- function(input, output, session) {
   
   # Output 3: Data Table
   output$dataTable <- DT::renderDataTable({
-    filtered_data()
+    # Add another check here (add this temporarily)
+    df_to_render <- filtered_data()
+    print(paste("Filtered data dimensions:", paste(dim(df_to_render), collapse=" x ")))
+    df_to_render
   })
   
 }

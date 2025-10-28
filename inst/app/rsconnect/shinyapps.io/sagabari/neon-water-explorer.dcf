@@ -1,0 +1,10 @@
+name: neon-water-explorer
+title:
+username: sagabari
+account: sagabari
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 15892860
+bundleId: 11096287
+url: https://sagabari.shinyapps.io/neon-water-explorer/
+version: 1
