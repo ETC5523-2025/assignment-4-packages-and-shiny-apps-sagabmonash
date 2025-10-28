@@ -2,3 +2,17 @@ url: https://etc5523-2025.github.io/assignment-4-packages-and-shiny-apps-sagabmo
 template:
   bootstrap: 5
 
+navbar:
+  components:
+    articles:
+      text: Articles
+      menu:           
+        
+        # Add a visual separator (optional)
+        - text: "-----------" 
+        
+        # Add your custom link to the Shiny app
+        - text: Live Shiny App 🚀 
+          href: https://sagabari.shinyapps.io/neon-water-explorer/
+          target: _blank
+          
