@@ -8,7 +8,10 @@ library(DT)
 # 1. THE USER INTERFACE (UI)
 # We use bslib for styling
 ui <- fluidPage(
-  theme = bs_theme(version = 5, bootswatch = "litera"),
+  theme = bs_theme(
+    version = 5, 
+    bootswatch = "flatly",
+    primary = "#006DAE"),
   includeCSS("www/styles.css"),
   titlePanel("NEON Water Quality Explorer"),
   
@@ -17,6 +20,7 @@ ui <- fluidPage(
   sidebarLayout(
     sidebarPanel(
       bslib::card(
+        fill = TRUE,
         bslib::card_header("Controls & Info"),
         bslib::card_body(
           h4("Instructions"),
@@ -124,7 +128,7 @@ server <- function(input, output, session) {
       y = ~nitrate,
       color = ~siteName,
       type = 'scatter',
-      mode = 'markers'
+      mode = 'lines'
     ) %>%
       layout(
         title = plot_title,
@@ -142,7 +146,8 @@ server <- function(input, output, session) {
       y = ~.data[[input$var_y]],
       color = ~siteName,
       type = 'scatter',
-      mode = 'markers'
+      mode = 'markers',
+      marker = list(opacity = 0.5)
     ) %>%
       layout(
         title = paste(input$var_y, "vs.", input$var_x),
